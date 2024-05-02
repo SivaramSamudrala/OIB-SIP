@@ -1,11 +1,7 @@
 package oibsip_task5;
+import java.util.*;
 
-import java.util.Scanner;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-// Book class to represent individual books
-class Digital_Libary_Management {
+class Digital_Library_Management {
     private String title;
     private String author;
     private String category;
@@ -18,7 +14,6 @@ class Digital_Libary_Management {
         this.quantity = quantity;
     }
 
-    // Getters and setters
     public String getTitle() {
         return title;
     }
@@ -40,7 +35,6 @@ class Digital_Libary_Management {
     }
 }
 
-// User class to represent individual library users
 class User {
     private String name;
     private String email;
@@ -52,7 +46,6 @@ class User {
         this.memberId = memberId;
     }
 
-    // Getters
     public String getName() {
         return name;
     }
@@ -66,60 +59,129 @@ class User {
     }
 }
 
-// Library class to manage books and users
-public class Library {
-    private static HashMap<String, Book> books = new HashMap<>();
-    private static ArrayList<User> users = new ArrayList<>();
-    private static Scanner scanner = new Scanner(System.in);
+class Library {
+    private HashMap<String, Book> books;
+    private ArrayList<User> users;
 
-    // Admin module functions
+    public Library() {
+        this.books = new HashMap<>();
+        this.users = new ArrayList<>();
+    }
+
+    public void addBook(Book book) {
+        books.put(book.getTitle(), book);
+    }
+
+    public void removeBook(String title) {
+        books.remove(title);
+    }
+
+    public void addUser(User user) {
+        users.add(user);
+    }
+
+    public void removeUser(User user) {
+        users.remove(user);
+    }
+
+    public HashMap<String, Book> getBooks() {
+        return books;
+    }
+
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+}
+
+public class LibraryManagementSystem {
+    private static Library library;
+    private static Scanner scanner;
+
     public static void adminModule() {
-        // Add books to the library
-        System.out.println("Admin Module - Add Books");
-        System.out.print("Enter book title: ");
+        System.out.println("Admin Module");
+        System.out.println("1. Add Book");
+        System.out.println("2. Remove Book");
+        System.out.println("3. View All Books");
+        System.out.println("4. Exit Admin Module");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline character
+
+        switch (choice) {
+            case 1:
+                addBook();
+                break;
+            case 2:
+                removeBook();
+                break;
+            case 3:
+                viewAllBooks();
+                break;
+            case 4:
+                return;
+            default:
+                System.out.println("Invalid choice");
+        }
+
+        adminModule(); // Recursive call to keep admin module running
+    }
+
+    public static void addBook() {
+        System.out.println("Enter book title:");
         String title = scanner.nextLine();
-        System.out.print("Enter author: ");
+        System.out.println("Enter author:");
         String author = scanner.nextLine();
-        System.out.print("Enter category: ");
+        System.out.println("Enter category:");
         String category = scanner.nextLine();
-        System.out.print("Enter quantity: ");
+        System.out.println("Enter quantity:");
         int quantity = scanner.nextInt();
-        books.put(title, new Book(title, author, category, quantity));
+        scanner.nextLine(); // Consume newline character
+
+        Book book = new Book(title, author, category, quantity);
+        library.addBook(book);
         System.out.println("Book added successfully!");
     }
 
-    // User module functions
-    public static void userModule() {
-        // Display available books
-        System.out.println("User Module - View Books");
-        for (Book book : books.values()) {
-            System.out.println(book.getTitle() + " by " + book.getAuthor() + " (" + book.getCategory() + ") - Available: " + book.getQuantity());
+    public static void removeBook() {
+        System.out.println("Enter title of the book to remove:");
+        String title = scanner.nextLine();
+        library.removeBook(title);
+        System.out.println("Book removed successfully!");
+    }
+
+    public static void viewAllBooks() {
+        System.out.println("All Books:");
+        for (Book book : library.getBooks().values()) {
+            System.out.println("Title: " + book.getTitle() + ", Author: " + book.getAuthor() + ", Category: " + book.getCategory() + ", Quantity: " + book.getQuantity());
         }
     }
 
     public static void main(String[] args) {
-        // Sample data - books and users
-        books.put("Java Programming", new Book("Java Programming", "John Smith", "Programming", 5));
-        books.put("Python Basics", new Book("Python Basics", "Alice Johnson", "Programming", 3));
-        users.add(new User("John Doe", "john.doe@example.com", 1001));
-        users.add(new User("Alice Smith", "alice.smith@example.com", 1002));
+        library = new Library();
+        scanner = new Scanner(System.in);
 
-        // Main menu
+        // Sample data - books and users
+        library.addBook(new Book("Java Programming", "John Smith", "Programming", 5));
+        library.addBook(new Book("Python Basics", "Alice Johnson", "Programming", 3));
+
         System.out.println("Welcome to the Digital Library Management System");
         System.out.println("1. Admin Module");
-        System.out.println("2. User Module");
-        System.out.print("Enter your choice: ");
+        System.out.println("2. Exit");
+
         int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline character
 
         switch (choice) {
             case 1:
                 adminModule();
                 break;
             case 2:
-                userModule();
+                System.out.println("Exiting...");
                 break;
             default:
-                System.out.println("Invalid choice. Exiting...");
+                System.out.println("Invalid choice");
         }
+
+        scanner.close();
     }
 }
